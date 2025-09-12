@@ -8,6 +8,9 @@ from sqlmodel import SQLModel
 
 from app.core.config import settings
 
+# Import models to ensure they are registered with SQLModel
+from app.models import User, Item, Wallet, Transaction  # noqa: F401
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

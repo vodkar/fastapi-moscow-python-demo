@@ -25,3 +25,16 @@ MIN_VARIABLE_NAME_LENGTH = 2
 MAX_JONES_COMPLEXITY = 14
 MAX_STRING_LITERAL_USAGE = 3
 MAX_EXPRESSION_USAGE = 7
+
+# Wallet limits
+MAX_WALLETS_PER_USER = 3
+
+# Exchange rates (base currency: USD)
+EXCHANGE_RATES = {
+    "USD": 1.0,
+    "EUR": 0.85,
+    "RUB": 90.0,
+}
+
+# Transaction fees (percentage)
+EXCHANGE_FEE_RATE = 0.01  # 1% fee for currency exchange
