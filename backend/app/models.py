@@ -1,6 +1,9 @@
 """Data models for the application."""
 
 import uuid
+from datetime import datetime, timezone
+from decimal import Decimal
+from enum import Enum
 
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
@@ -14,6 +17,22 @@ from app.constants import (
 
 # Token type constant to avoid hardcoded string
 TOKEN_TYPE_BEARER = "bearer"  # noqa: S105
+
+
+# Wallet and Transaction enums
+class CurrencyEnum(str, Enum):
+    """Supported currency types."""
+
+    USD = "USD"
+    EUR = "EUR"
+    RUB = "RUB"
+
+
+class TransactionTypeEnum(str, Enum):
+    """Transaction types."""
+
+    CREDIT = "credit"
+    DEBIT = "debit"
 
 
 # Shared properties
@@ -86,6 +105,7 @@ class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
     item_list: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    wallets: list["Wallet"] = Relationship(back_populates="owner", cascade_delete=True)
 
 
 # Properties to return via API, id is always required
@@ -99,6 +119,106 @@ class UsersPublic(SQLModel):
     """Collection of public users."""
 
     user_data: list[UserPublic]
+    count: int
+
+
+# Shared wallet properties
+class WalletBase(SQLModel):
+    """Base wallet model with shared fields."""
+
+    currency: CurrencyEnum
+    balance: Decimal = Field(default=Decimal("0.00"), decimal_places=2)
+
+
+# Properties to receive via API on creation
+class WalletCreate(SQLModel):
+    """Wallet creation model."""
+
+    currency: CurrencyEnum
+
+
+# Properties to receive via API on update
+class WalletUpdate(SQLModel):
+    """Wallet update model."""
+
+    balance: Decimal | None = Field(default=None, decimal_places=2)
+
+
+# Database model
+class Wallet(WalletBase, table=True):
+    """Database wallet model."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(
+        foreign_key="user.id",
+        nullable=False,
+        ondelete="CASCADE",
+    )
+    owner: User | None = Relationship(back_populates="wallets")
+    transactions: list["Transaction"] = Relationship(
+        back_populates="wallet", cascade_delete=True
+    )
+
+
+# Properties to return via API
+class WalletPublic(WalletBase):
+    """Public wallet model for API responses."""
+
+    id: uuid.UUID
+    user_id: uuid.UUID
+
+
+class WalletsPublic(SQLModel):
+    """Collection of public wallets."""
+
+    wallet_data: list[WalletPublic]
+    count: int
+
+
+# Shared transaction properties
+class TransactionBase(SQLModel):
+    """Base transaction model with shared fields."""
+
+    amount: Decimal = Field(decimal_places=2)
+    transaction_type: TransactionTypeEnum
+    currency: CurrencyEnum
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Properties to receive via API on creation
+class TransactionCreate(SQLModel):
+    """Transaction creation model."""
+
+    wallet_id: uuid.UUID
+    amount: Decimal = Field(decimal_places=2)
+    transaction_type: TransactionTypeEnum
+
+
+# Database model
+class Transaction(TransactionBase, table=True):
+    """Database transaction model."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    wallet_id: uuid.UUID = Field(
+        foreign_key="wallet.id",
+        nullable=False,
+        ondelete="CASCADE",
+    )
+    wallet: Wallet | None = Relationship(back_populates="transactions")
+
+
+# Properties to return via API
+class TransactionPublic(TransactionBase):
+    """Public transaction model for API responses."""
+
+    id: uuid.UUID
+    wallet_id: uuid.UUID
+
+
+class TransactionsPublic(SQLModel):
+    """Collection of public transactions."""
+
+    transaction_data: list[TransactionPublic]
     count: int
 
 
