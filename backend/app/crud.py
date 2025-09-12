@@ -77,7 +77,10 @@ def create_item(*, session: Session, item_in: ItemCreate, owner_id: uuid.UUID) -
 
 # Wallet CRUD operations
 def create_wallet(
-    *, session: Session, wallet_in: WalletCreate, user_id: uuid.UUID
+    *,
+    session: Session,
+    wallet_in: WalletCreate,
+    user_id: uuid.UUID,
 ) -> Wallet:
     """Create a new wallet for a user."""
     # Check if user already has a wallet with this currency
@@ -194,7 +197,7 @@ def get_wallet_transactions(
             .where(Transaction.wallet_id == wallet_id)
             .offset(skip)
             .limit(limit),
-        ).all()
+        ).all(),
     )
 
 

@@ -1,10 +1,9 @@
 """Tests for wallet and transaction functionality."""
 
-import pytest
 from decimal import Decimal
 
-from app.utils import convert_currency, convert_with_fee, calculate_exchange_fee
 from app.models import Currency
+from app.utils import calculate_exchange_fee, convert_currency, convert_with_fee
 
 
 def test_currency_conversion():
