@@ -1,8 +1,15 @@
-"""Data models for the application."""
+"""Data models for the application.
+
+Includes user, item plus wallet & transaction domain models.
+"""
 
 import uuid
+from datetime import UTC, datetime
+from decimal import ROUND_DOWN, Decimal, getcontext
+from enum import Enum
 
-from pydantic import EmailStr
+from pydantic import EmailStr, field_validator
+from sqlalchemy import Column, Numeric
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.constants import (
@@ -86,6 +93,10 @@ class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
     item_list: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    wallet_list: list["Wallet"] = Relationship(
+        back_populates="owner",
+        cascade_delete=True,
+    )
 
 
 # Properties to return via API, id is always required
@@ -148,6 +159,156 @@ class ItemsPublic(SQLModel):
 
     item_data: list[ItemPublic]
     count: int
+
+
+# ================= Wallet & Transaction Domain ==================
+
+AVAILABLE_CURRENCIES = {"USD", "EUR", "RUB"}
+
+
+class TransactionType(str, Enum):
+    """Enumeration for transaction types."""
+
+    CREDIT = "credit"
+    DEBIT = "debit"
+
+
+DECIMAL_PLACES = Decimal("0.01")
+getcontext().prec = 28  # high precision, quantize later
+
+
+def _quantize(value: Decimal) -> Decimal:
+    """Quantize decimal to two places using ROUND_DOWN for consistency.
+
+    Args:
+        value: Raw decimal value.
+
+    Returns:
+        Decimal: Quantized value with 2 decimal places.
+
+    """
+    return value.quantize(DECIMAL_PLACES, rounding=ROUND_DOWN)
+
+
+class WalletBase(SQLModel):
+    """Base wallet shared properties."""
+
+    currency: str = Field(description="Currency code (USD, EUR, RUB)")
+
+    @field_validator("currency")
+    @classmethod
+    def validate_currency(cls, value: str) -> str:
+        """Validate currency code membership."""
+        if value not in AVAILABLE_CURRENCIES:
+            msg = "Unsupported currency"
+            raise ValueError(msg)
+        return value
+
+
+class Wallet(WalletBase, table=True):  # type: ignore[too-many-ancestors]
+    """Wallet database model."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(
+        foreign_key="user.id",
+        nullable=False,
+        ondelete="CASCADE",
+    )
+    balance: Decimal = Field(
+        default=Decimal("0.00"),
+        description="Wallet balance in smallest precision (2 decimals)",
+        sa_column=Column(Numeric(12, 2), default=Decimal("0.00")),
+    )
+    owner: User | None = Relationship(back_populates="wallet_list")
+    transaction_list: list["Transaction"] = Relationship(
+        back_populates="wallet",
+        cascade_delete=True,
+    )
+
+    @field_validator("balance")
+    @classmethod
+    def validate_balance(cls, value: Decimal) -> Decimal:
+        """Ensure balance always stored with 2 decimal places."""
+        return _quantize(value)
+
+
+class WalletCreate(WalletBase):
+    """Wallet creation payload."""
+
+
+class WalletPublic(WalletBase):
+    """Wallet public representation."""
+
+    id: uuid.UUID
+    owner_id: uuid.UUID
+    balance: Decimal
+
+    @field_validator("balance")
+    @classmethod
+    def validate_balance(cls, value: Decimal) -> Decimal:
+        """Ensure balance always serializes with 2 decimals."""
+        return _quantize(value)
+
+
+class WalletsPublic(SQLModel):
+    """Collection of wallets."""
+
+    wallet_data: list[WalletPublic]
+    count: int
+
+
+class TransactionBase(SQLModel):
+    """Base transaction shared properties."""
+
+    amount: Decimal = Field(
+        description="Amount in transaction currency, positive",
+        sa_column=Column(Numeric(12, 2)),
+    )
+    type: TransactionType
+    currency: str
+
+    @field_validator("currency")
+    @classmethod
+    def validate_currency(cls, value: str) -> str:
+        """Validate currency code membership."""
+        if value not in AVAILABLE_CURRENCIES:
+            msg = "Unsupported currency"
+            raise ValueError(msg)
+        return value
+
+    @field_validator("amount")
+    @classmethod
+    def validate_amount(cls, value: Decimal) -> Decimal:
+        """Validate amount positive and quantize."""
+        if value <= 0:
+            msg = "Amount must be greater than zero"
+            raise ValueError(msg)
+        return _quantize(value)
+
+
+class Transaction(TransactionBase, table=True):  # type: ignore[too-many-ancestors]
+    """Transaction database model."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    wallet_id: uuid.UUID = Field(
+        foreign_key="wallet.id",
+        nullable=False,
+        ondelete="CASCADE",
+    )
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    wallet: Wallet | None = Relationship(back_populates="transaction_list")
+
+
+class TransactionCreate(TransactionBase):
+    """Transaction creation payload."""
+
+
+class TransactionPublic(TransactionBase):
+    """Transaction public schema."""
+
+    id: uuid.UUID
+    wallet_id: uuid.UUID
+    timestamp: datetime
 
 
 # Generic message
