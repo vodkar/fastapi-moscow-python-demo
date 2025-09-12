@@ -1,8 +1,11 @@
 """Data models for the application."""
 
 import uuid
+from datetime import UTC, datetime
+from decimal import Decimal
+from enum import Enum
 
-from pydantic import EmailStr
+from pydantic import EmailStr, field_validator
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.constants import (
@@ -180,3 +183,122 @@ class NewPassword(SQLModel):
         min_length=PASSWORD_MIN_LENGTH,
         max_length=PASSWORD_MAX_LENGTH,
     )
+
+
+# ---- Wallet & Transaction domain ----
+
+ALLOWED_CURRENCIES = {"USD", "EUR", "RUB"}
+
+
+class TransactionType(str, Enum):
+    """Enumeration of transaction directions."""
+
+    credit = "credit"
+    debit = "debit"
+
+
+class WalletBase(SQLModel):
+    """Shared wallet fields."""
+
+    currency: str = Field(description="Wallet currency (USD, EUR, RUB)")
+
+    @field_validator("currency")
+    @classmethod
+    def validate_currency(cls, v: str) -> str:
+        """Ensure currency is one of supported list."""
+        if v not in ALLOWED_CURRENCIES:
+            msg = "Unsupported currency"
+            raise ValueError(msg)
+        return v
+
+
+class WalletCreate(WalletBase):
+    """Payload to create a wallet."""
+
+
+class Wallet(WalletBase, table=True):
+    """Wallet DB model."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(
+        foreign_key="user.id",
+        nullable=False,
+        ondelete="CASCADE",
+    )
+    # store balance as Decimal with 2 digits scale
+    balance: Decimal = Field(
+        default=Decimal("0.00"),
+        description="Current balance",
+    )
+    transaction_list: list["Transaction"] = Relationship(
+        back_populates="wallet",
+        cascade_delete=True,
+    )
+
+
+class WalletPublic(WalletBase):
+    """Wallet details sent to clients."""
+
+    id: uuid.UUID
+    user_id: uuid.UUID
+    balance: Decimal
+
+
+class WalletsPublic(SQLModel):
+    """Collection of wallets."""
+
+    wallet_data: list[WalletPublic]
+    count: int
+
+
+class TransactionBase(SQLModel):
+    """Shared transaction fields."""
+
+    amount: Decimal = Field(gt=0)  # type: ignore[arg-type]
+    type: TransactionType
+    currency: str
+
+    @field_validator("currency")
+    @classmethod
+    def validate_currency(cls, v: str) -> str:
+        """Ensure currency is one of supported list."""
+        if v not in ALLOWED_CURRENCIES:
+            msg = "Unsupported currency"
+            raise ValueError(msg)
+        return v
+
+
+class TransactionCreate(TransactionBase):
+    """Payload to create a transaction."""
+
+    wallet_id: uuid.UUID
+    # Optional target wallet for future extension; not used now.
+    target_wallet_id: uuid.UUID | None = None
+
+
+class Transaction(TransactionBase, table=True):
+    """Transaction DB model."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    wallet_id: uuid.UUID = Field(
+        foreign_key="wallet.id",
+        nullable=False,
+        ondelete="CASCADE",
+    )
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    wallet: Wallet | None = Relationship(back_populates="transaction_list")
+
+
+class TransactionPublic(TransactionBase):
+    """Transaction details."""
+
+    id: uuid.UUID
+    wallet_id: uuid.UUID
+    timestamp: datetime
+
+
+class TransactionsPublic(SQLModel):
+    """Collection of transactions."""
+
+    transaction_data: list[TransactionPublic]
+    count: int
