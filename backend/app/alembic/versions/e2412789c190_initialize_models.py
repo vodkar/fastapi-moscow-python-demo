@@ -1,4 +1,5 @@
-"""Initialize models.
+"""
+Initialize models.
 
 Revision ID: e2412789c190
 Revises:

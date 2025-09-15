@@ -8,7 +8,6 @@ from pydantic import (
     AnyUrl,
     BeforeValidator,
     EmailStr,
-    HttpUrl,
     PostgresDsn,
     computed_field,
     model_validator,
@@ -55,7 +54,6 @@ class Settings(BaseSettings):  # type: ignore[explicit-any]
 
     # Project Settings
     PROJECT_NAME: str
-    SENTRY_DSN: HttpUrl | None = None
 
     # Database Settings
     POSTGRES_SERVER: str
@@ -117,12 +115,6 @@ class Settings(BaseSettings):  # type: ignore[explicit-any]
                 warnings.warn(message, stacklevel=1)
             else:
                 raise ValueError(message)
-
-    @model_validator(mode="after")
-    def _set_default_emails_from(self) -> Self:
-        if not self.EMAILS_FROM_NAME:
-            self.EMAILS_FROM_NAME = self.PROJECT_NAME  # noqa: WPS601
-        return self
 
     @model_validator(mode="after")
     def _enforce_non_default_secrets(self) -> Self:

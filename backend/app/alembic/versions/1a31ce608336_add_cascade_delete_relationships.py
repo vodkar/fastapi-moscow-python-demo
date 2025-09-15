@@ -1,4 +1,5 @@
-"""Add cascade delete relationships.
+"""
+Add cascade delete relationships.
 
 Revision ID: 1a31ce608336
 Revises: d98dd8ec85a3

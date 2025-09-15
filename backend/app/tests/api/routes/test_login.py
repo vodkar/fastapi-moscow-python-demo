@@ -3,11 +3,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-from app.constants import (
-    BAD_REQUEST_CODE,
-    NOT_FOUND_CODE,
-    OK_CODE,
-)
+from app.constants import BAD_REQUEST_CODE, NOT_FOUND_CODE, OK_CODE
 from app.core.config import settings
 from app.core.security import verify_password
 from app.crud import create_user

@@ -15,7 +15,7 @@ from app.core import config, db, security
 from app.models import TokenPayload, User
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{config.settings.API_V1_STR}/login/access-token",  # noqa: WPS237
+    tokenUrl=f"{config.settings.API_V1_STR}/login/access-token",
 )
 
 

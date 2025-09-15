@@ -1,4 +1,5 @@
-"""Edit replace id integers in all models to use UUID instead.
+"""
+Edit replace id integers in all models to use UUID instead.
 
 Revision ID: d98dd8ec85a3
 Revises: 9c0a54914c78

@@ -1,0 +1,11 @@
+tool,file,line,severity
+bandit,backend/app/core/config.py,109,LOW
+bandit,backend/app/models/api_models.py,15,LOW
+radon_cc,backend/app/email_utils.py,23,B
+radon_cc,backend/app/tests/api/routes/test_items.py,23,B
+radon_cc,backend/app/tests/api/routes/test_items.py,41,B
+radon_cc,backend/app/tests/api/routes/test_items.py,103,B
+radon_cc,backend/app/tests/api/routes/test_users.py,357,B
+radon_cc,backend/app/tests/api/routes/test_users.py,232,B
+vulture,backend/app/models/api_models.py,45,warning
+vulture,backend/app/models/db_models.py,34,warning

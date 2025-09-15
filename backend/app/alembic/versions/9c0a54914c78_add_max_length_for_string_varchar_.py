@@ -1,4 +1,5 @@
-"""Add max length for string(varchar) fields in User and Items models.
+"""
+Add max length for string(varchar) fields in User and Items models.
 
 Revision ID: 9c0a54914c78
 Revises: e2412789c190

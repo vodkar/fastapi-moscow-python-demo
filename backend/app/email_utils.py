@@ -1,37 +1,23 @@
-"""Utility functions for email, authentication, and template rendering."""
+"""Utility functions for email sending and authentication tokens."""
 
 import logging
-from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 
-# Removed unused Any import
-import emails  # type: ignore[import-not-found]
 import jwt
-from jinja2 import Template
+from emails import Message  # type: ignore[attr-defined]
 from jwt.exceptions import InvalidTokenError
 
 from app.core import security
 from app.core.config import settings
+from app.email_templates import (
+    EmailData,
+    generate_new_account_email,
+    generate_reset_password_email,
+    generate_test_email,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class EmailData:
-    """Data structure for email content and metadata."""
-
-    html_content: str
-    subject: str
-
-
-def render_email_template(*, template_name: str, context: dict[str, str | int]) -> str:
-    """Render email template with provided context."""
-    template_str = (
-        Path(__file__).parent / "email-templates" / "build" / template_name
-    ).read_text()
-    return Template(template_str).render(context)
 
 
 def send_email(
@@ -44,7 +30,7 @@ def send_email(
     if not settings.emails_enabled:
         msg = "no provided configuration for email variables"
         raise ValueError(msg)
-    message = emails.Message(
+    message = Message(  # type: ignore[no-untyped-call]
         subject=subject,
         html=html_content,
         mail_from=(settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL),
@@ -58,58 +44,8 @@ def send_email(
         smtp_options["user"] = settings.SMTP_USER
     if settings.SMTP_PASSWORD:
         smtp_options["password"] = settings.SMTP_PASSWORD
-    response = message.send(to=email_to, smtp=smtp_options)
+    response = message.send(to=email_to, smtp=smtp_options)  # type: ignore[no-untyped-call]
     logger.info("send email result: %s", response)
-
-
-def generate_test_email(email_to: str) -> EmailData:
-    """Generate test email data."""
-    project_name = settings.PROJECT_NAME
-    subject = f"{project_name} - Test email"
-    html_content = render_email_template(
-        template_name="test_email.html",
-        context={"project_name": settings.PROJECT_NAME, "email": email_to},
-    )
-    return EmailData(html_content=html_content, subject=subject)
-
-
-def generate_reset_password_email(email_to: str, email: str, token: str) -> EmailData:
-    """Generate password reset email data."""
-    project_name = settings.PROJECT_NAME
-    subject = f"{project_name} - Password recovery for user {email}"
-    link = f"{settings.FRONTEND_HOST}/reset-password?token={token}"
-    html_content = render_email_template(
-        template_name="reset_password.html",
-        context={
-            "project_name": settings.PROJECT_NAME,
-            "username": email,
-            "email": email_to,
-            "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
-            "link": link,
-        },
-    )
-    return EmailData(html_content=html_content, subject=subject)
-
-
-def generate_new_account_email(
-    email_to: str,
-    username: str,
-    password: str,
-) -> EmailData:
-    """Generate new account confirmation email data."""
-    project_name = settings.PROJECT_NAME
-    subject = f"{project_name} - New account for user {username}"
-    html_content = render_email_template(
-        template_name="new_account.html",
-        context={
-            "project_name": settings.PROJECT_NAME,
-            "username": username,
-            "password": password,
-            "email": email_to,
-            "link": settings.FRONTEND_HOST,
-        },
-    )
-    return EmailData(html_content=html_content, subject=subject)
 
 
 def generate_password_reset_token(email: str) -> str:
@@ -136,3 +72,14 @@ def verify_password_reset_token(token: str) -> str | None:
     except InvalidTokenError:
         return None
     return str(decoded_token["sub"])
+
+
+__all__ = [
+    "EmailData",
+    "generate_new_account_email",
+    "generate_password_reset_token",
+    "generate_reset_password_email",
+    "generate_test_email",
+    "send_email",
+    "verify_password_reset_token",
+]
