@@ -101,6 +101,7 @@ ignore = [
     "D103", # Ignore missing docstrings in tests
     "D100", # Ignore missing docstrings in public modules
 ]
+"backend/app/models/__init__.py" = ["RUF022"]
 
 [tool.bandit]
 exclude_dirs = ["app/tests"]

@@ -31,7 +31,7 @@ from app.models.user_models import (
     UserUpdateMe,
 )
 
-__all__ = [  # noqa: RUF022
+__all__ = [
     # API models
     "Message",
     "NewPassword",

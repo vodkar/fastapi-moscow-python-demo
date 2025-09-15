@@ -32,3 +32,5 @@ class Item(SQLModel, table=True):
         ondelete="CASCADE",
     )
     owner: User | None = Relationship(back_populates="item_list")
+
+

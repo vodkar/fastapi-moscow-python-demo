@@ -1,7 +1,6 @@
 """Item management API endpoints."""
 
 import uuid
-from mailbox import Message
 
 from fastapi import APIRouter, HTTPException
 from sqlmodel import func, select
@@ -10,7 +9,7 @@ from app.api.deps import CurrentUser, SessionDep
 from app.constants import BAD_REQUEST_CODE, NOT_FOUND_CODE
 
 # Removed unused Any import
-from app.models import Item, ItemCreate, ItemPublic, ItemsPublic, ItemUpdate
+from app.models import Item, ItemCreate, ItemPublic, ItemsPublic, ItemUpdate, Message
 
 router = APIRouter(prefix="/items", tags=["items"])
 

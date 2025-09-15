@@ -78,16 +78,16 @@ class Settings(BaseSettings):  # type: ignore[explicit-any]
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str
 
+    @computed_field # type: ignore[prop-decorator]
     @property
-    @computed_field
     def all_cors_origins(self) -> list[str]:
         """Get all CORS origins."""
         return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
             self.FRONTEND_HOST,
         ]
 
+    @computed_field # type: ignore[prop-decorator]
     @property
-    @computed_field
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:  # noqa: N802
         """Build database URI from configuration."""
         return PostgresDsn.build(
@@ -99,8 +99,8 @@ class Settings(BaseSettings):  # type: ignore[explicit-any]
             path=self.POSTGRES_DB,
         )
 
+    @computed_field # type: ignore[prop-decorator]
     @property
-    @computed_field
     def emails_enabled(self) -> bool:
         """Check if email configuration is enabled."""
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
