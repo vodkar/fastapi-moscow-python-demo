@@ -3,8 +3,6 @@ bandit,backend/app/core/config.py,109,LOW
 bandit,backend/app/models/api_models.py,15,LOW
 ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/alembic/versions/add_wallet_and_transaction_models.py,1,error
 ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/alembic/versions/add_wallet_and_transaction_models.py,1,error
-ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/alembic/versions/add_wallet_and_transaction_models.py,22,warning
-ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/alembic/versions/add_wallet_and_transaction_models.py,54,warning
 mypy,backend/app/api/routes/wallets.py,237,error
 radon_cc,backend/app/email_utils.py,23,B
 radon_cc,backend/app/tests/api/routes/test_items.py,23,B

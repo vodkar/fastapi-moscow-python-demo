@@ -1,6 +1,6 @@
 Tool,Total Issues (A excl),Files Analyzed,Issues per File
 bandit,2,2,1.0
-ruff,4,1,4.0
+ruff,2,1,2.0
 mypy,1,1,1.0
 radon_cc,7,4,1.75
 radon_mi,0,0,0.0
