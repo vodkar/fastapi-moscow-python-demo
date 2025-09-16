@@ -1,0 +1,7 @@
+implementation,display_name,count,mean,median,std,min,max
+claude_code_no_tuning,Claude Code (Basic),57,80.606,87.71,21.911,22.87,100.0
+claude_code_with_tuning,Claude Code (Tuned),58,80.393,87.646,21.838,22.87,100.0
+copilot_claude_no_tuning,Copilot Claude (Basic),62,79.807,87.211,21.549,22.87,100.0
+copilot_claude_with_tuning,Copilot Claude (Tuned),60,81.097,90.734,21.867,22.87,100.0
+copilot_gpt_no_tuning,Copilot GPT (Basic),59,80.562,87.583,21.383,22.87,100.0
+copilot_gpt_with_tuning,Copilot GPT (Tuned),57,81.079,87.71,21.421,22.87,100.0
