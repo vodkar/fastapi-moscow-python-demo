@@ -1,0 +1,6 @@
+file,mi_score,mi_rank
+backend/app/main.py,85.5,A
+backend/app/crud.py,72.3,B
+backend/app/models.py,91.2,A
+backend/app/utils.py,68.7,B
+backend/app/core/config.py,88.4,A

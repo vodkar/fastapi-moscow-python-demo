@@ -1,0 +1,6 @@
+file,function,line,complexity,rank,type
+backend/app/main.py,create_user,45,3,A,function
+backend/app/main.py,process_data,78,8,B,function
+backend/app/crud.py,complex_query,156,15,C,function
+backend/app/utils.py,helper_function,23,2,A,function
+backend/app/models.py,User.__init__,67,4,A,method

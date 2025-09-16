@@ -1,0 +1,5 @@
+tool,file,line,severity,message
+bandit,backend/app/main.py,45,MEDIUM,Hardcoded password string
+ruff,backend/app/crud.py,123,error,F401 'sys' imported but unused
+mypy,backend/app/models.py,67,error,Incompatible return value type
+vulture,backend/app/utils.py,89,warning,unused function 'helper_func'
