@@ -87,6 +87,7 @@ ignore = [
     "COM812", # Allow f-strings with single curly braces
     "D203", # 1 blank line required before class docstring (conflicts with D211)
     "D212", # Multi-line docstring summary should start at the first line
+    "E501",
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
@@ -108,5 +109,6 @@ exclude_dirs = ["app/tests"]
 
 [tool.vulture]
 exclude = ["backend/app/alembic/"]
-ignore_decorators = ["@router.get", "@router.post", "@router.put", "@router.delete", "@router.patch", "@model_validator"]
+ignore_decorators = ["@router.get", "@router.post", "@router.put", "@router.delete", "@router.patch", 
+    "@model_validator", "@field_validator"]
 ignore_names = ["model_config", "return_value"]
