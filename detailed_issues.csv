@@ -1,13 +1,7 @@
 tool,file,line,severity
 bandit,backend/app/core/config.py,109,LOW
 bandit,backend/app/models/api_models.py,15,LOW
-ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo-1/backend/app/models/db_models.py,89,error
-mypy,backend/app/email_utils.py,7,error
-mypy,backend/app/email_utils.py,7,error
-mypy,backend/app/email_utils.py,7,note
-mypy,backend/app/email_utils.py,7,note
-mypy,backend/app/email_utils.py,33,error
-mypy,backend/app/email_utils.py,47,error
+ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/models/db_models.py,89,error
 radon_cc,backend/app/email_utils.py,23,B
 radon_cc,backend/app/crud.py,163,B
 radon_cc,backend/app/tests/api/routes/test_items.py,23,B
