@@ -103,6 +103,7 @@ ignore = [
     "D100", # Ignore missing docstrings in public modules
 ]
 "backend/app/models/__init__.py" = ["RUF022"]
+"backend/app/alembic/**/*.py" = ["D103"]
 
 [tool.bandit]
 exclude_dirs = ["app/tests"]
