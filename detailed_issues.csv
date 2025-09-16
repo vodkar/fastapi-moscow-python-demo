@@ -1,8 +1,6 @@
 tool,file,line,severity
 bandit,backend/app/core/config.py,109,LOW
 bandit,backend/app/models/api_models.py,15,LOW
-ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/alembic/versions/20250915_add_wallets_transactions.py,21,warning
-ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/alembic/versions/20250915_add_wallets_transactions.py,54,warning
 ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/api/main.py,3,error
 ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/api/routes/wallets.py,3,error
 ruff,/Users/somen/Zavodi/opensource/fastapi-moscow-python-demo/backend/app/api/routes/wallets.py,30,error
