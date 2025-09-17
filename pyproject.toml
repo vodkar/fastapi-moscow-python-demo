@@ -24,6 +24,7 @@ dependencies = [
     "seaborn>=0.13.2",
     "sqlalchemy>=2.0.43",
     "sqlmodel>=0.0.24",
+    "tabulate>=0.9.0",
     "tenacity>=9.1.2",
     "types-passlib>=1.7.7.20250602",
     "vulture>=2.14",
