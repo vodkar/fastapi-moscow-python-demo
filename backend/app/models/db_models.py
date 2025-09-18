@@ -1,11 +1,27 @@
 """Database table models."""
 
 import uuid
+from datetime import datetime, timezone
+from enum import StrEnum
 
+from app.constants import EMAIL_MAX_LENGTH, STRING_MAX_LENGTH
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
-from app.constants import EMAIL_MAX_LENGTH, STRING_MAX_LENGTH
+
+class CurrencyType(StrEnum):
+    """Available currency types."""
+
+    USD = "USD"
+    EUR = "EUR"
+    RUB = "RUB"
+
+
+class TransactionType(StrEnum):
+    """Transaction types."""
+
+    CREDIT = "credit"
+    DEBIT = "debit"
 
 
 class User(SQLModel, table=True):
@@ -18,6 +34,9 @@ class User(SQLModel, table=True):
     full_name: str | None = Field(default=None, max_length=STRING_MAX_LENGTH)
     hashed_password: str
     item_list: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    wallet_list: list["Wallet"] = Relationship(
+        back_populates="user", cascade_delete=True
+    )
 
 
 class Item(SQLModel, table=True):
@@ -34,3 +53,34 @@ class Item(SQLModel, table=True):
     owner: User | None = Relationship(back_populates="item_list")
 
 
+class Wallet(SQLModel, table=True):
+    """Database wallet model."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(
+        foreign_key="user.id",
+        nullable=False,
+        ondelete="CASCADE",
+    )
+    balance: float = Field(default=0.0, ge=0.0)
+    currency: CurrencyType
+    user: User | None = Relationship(back_populates="wallet_list")
+    transaction_list: list["Transaction"] = Relationship(
+        back_populates="wallet", cascade_delete=True
+    )
+
+
+class Transaction(SQLModel, table=True):
+    """Database transaction model."""
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    wallet_id: uuid.UUID = Field(
+        foreign_key="wallet.id",
+        nullable=False,
+        ondelete="CASCADE",
+    )
+    amount: float = Field(gt=0.0)
+    transaction_type: TransactionType
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    currency: CurrencyType
+    wallet: Wallet | None = Relationship(back_populates="transaction_list")
