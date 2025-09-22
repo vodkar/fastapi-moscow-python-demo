@@ -10,7 +10,14 @@ from app.models.api_models import (
     UserPublic,
     UsersPublic,
 )
-from app.models.db_models import Item, User
+from app.models.db_models import (
+    Currency,
+    Item,
+    Transaction,
+    TransactionType,
+    User,
+    Wallet,
+)
 
 # Item models
 from app.models.item_models import (
@@ -19,6 +26,14 @@ from app.models.item_models import (
     ItemPublic,
     ItemsPublic,
     ItemUpdate,
+)
+
+# Transaction models
+from app.models.transaction_models import (
+    TransactionBase,
+    TransactionCreate,
+    TransactionPublic,
+    TransactionsPublic,
 )
 
 # User models
@@ -31,6 +46,14 @@ from app.models.user_models import (
     UserUpdateMe,
 )
 
+# Wallet models
+from app.models.wallet_models import (
+    WalletBase,
+    WalletCreate,
+    WalletPublic,
+    WalletsPublic,
+)
+
 __all__ = [
     # API models
     "Message",
@@ -40,14 +63,23 @@ __all__ = [
     "UserPublic",
     "UsersPublic",
     # Database models
+    "Currency",
     "Item",
+    "Transaction",
+    "TransactionType",
     "User",
+    "Wallet",
     # Item models
     "ItemBase",
     "ItemCreate",
     "ItemPublic",
     "ItemsPublic",
     "ItemUpdate",
+    # Transaction models
+    "TransactionBase",
+    "TransactionCreate",
+    "TransactionPublic",
+    "TransactionsPublic",
     # User models
     "UpdatePassword",
     "UserBase",
@@ -55,4 +87,9 @@ __all__ = [
     "UserRegister",
     "UserUpdate",
     "UserUpdateMe",
+    # Wallet models
+    "WalletBase",
+    "WalletCreate",
+    "WalletPublic",
+    "WalletsPublic",
 ]
